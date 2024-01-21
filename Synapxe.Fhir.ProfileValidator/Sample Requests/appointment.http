@@ -261,30 +261,6 @@ Content-Type: application/fhir+json
   ]
 }
 
-### 5.1 Reference Validation - FHIR native validation on the reference type
-# For elements that represent references to other resources, native validation checks that the reference is valid
-# e.g. participant's actor points to patient resource and the patient resource with the id should exist.
-
-POST {{baseUrl}}/Appointment
-X-Ihis-SourceApplication: {{applicationId}}
-Content-Type: application/fhir+json
-
-{
-  "resourceType": "Appointment",
-  "status": "proposed",
-  "start": "2024-02-01T13:00:00+08:00",
-  "end": "2024-02-01T13:30:00+08:00",
-  "description": "Dental Appointment",
-  "participant": [
-    {
-      "actor": {
-        "reference": "Practitioner/{{patientId}}"
-      },
-      "status": "tentative"
-    }
-  ]
-}
-
 ### 5. Reference Validation:
 # For elements that represent references to other resources, native validation checks that the reference is valid, points to an existing resource, and is of the correct type.
 # e.g. participant's actor points to patient resource and the patient resource with the id should exist.
@@ -357,11 +333,8 @@ Content-Type: application/fhir+json
   ]
 }
 
-# Extension - used for adding addtional elements or information to resources
-# http://hl7.org/fhir/extensibility.html
-
 ### 8. Extensions Validation - 
-
+# Extension - used for adding addtional elements or information to resources
 POST {{baseUrl}}/Appointment
 X-Ihis-SourceApplication: {{applicationId}}
 Content-Type: application/fhir+json
@@ -371,7 +344,7 @@ Content-Type: application/fhir+json
   "extension": [
     {
       "url": "http://synapxe.sg/extension/condition-tag",
-      "valueCode": "HT"
+      "valueString": "HP"
     }
   ],
   "status": "booked",
@@ -388,10 +361,115 @@ Content-Type: application/fhir+json
   ]
 }
 
-### 8. Extensions Validation - Slicing
-# 
+### 8.1 Extensions Validation - Slicing
+# e.g extension condition-tag instance more than 2
 
-# http://hl7.org/fhirpath/#expressions
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "extension": [
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HT"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HP"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "DM"
+          }
+        ]
+      }
+    }
+  ],
+  "status": "proposed",
+  "start": "2024-02-02T01:00:00+08:00",
+  "end": "2024-02-02T01:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+
+### 8.1 Extensions Validation - Slicing
+# e.g extension mobile-number does not follow defined format
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "extension": [
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HT"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HP"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/mobile-number",
+      "valueString": "78765432"
+    }
+  ],
+  "status": "proposed",
+  "start": "2024-02-02T01:00:00+08:00",
+  "end": "2024-02-02T01:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
 
 ### Create Appointment Request - success
 
