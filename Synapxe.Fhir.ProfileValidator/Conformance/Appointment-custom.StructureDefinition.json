@@ -1,0 +1,78 @@
+﻿{
+  "resourceType": "StructureDefinition",
+  "id": "Appointment-custom",
+  "url": "http://synapxe.sg/fhir/StructureDefinition/Appointment-custom",
+  "name": "Appointment-custom",
+  "status": "active",
+  "fhirVersion": "5.0.0",
+  "abstract": false,
+  "type": "Appointment",
+  "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Appointment",
+  "derivation": "constraint",
+  "differential": {
+    "element": [
+      {
+        "id": "Appointment",
+        "path": "Appointment",
+        "constraint": [
+          {
+            "key": "demo-apt-1",
+            "severity": "error",
+            "human": "when start or end presents, it SHALL have a higher value than current date time",
+            "expression": "start.hasValue().not() or now() <= start and end.hasValue().not() or now() <= end"
+          }
+        ]
+      },
+      {
+        "id": "Appointment.extension:condition-tag",
+        "path": "Appointment.extension",
+        "sliceName": "condition-tag",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://synapxe.sg/extension/condition-tag"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Appointment.extension:mobile-number",
+        "path": "Appointment.extension",
+        "sliceName": "mobile-number",
+        "type": [
+          {
+            "code": "Extension",
+            "profile": [
+              "http://synapxe.sg/extension/mobile-number"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "Appointment.cancellationReason",
+        "path": "Appointment.cancellationReason",
+        "binding": {
+          "strength": "required",
+          "valueSet": "http://synapxe.sg/fhir/ValueSet/appointmentCancellationReason"
+        }
+      },
+      {
+        "id": "Appointment.description",
+        "path": "Appointment.description",
+        "min": 1
+      },
+      {
+        "id": "Appointment.minutesDuration",
+        "path": "Appointment.minutesDuration",
+        "minValuePositiveInt": 12,
+        "maxValuePositiveInt": 300
+      },
+      {
+        "id": "Appointment.created",
+        "path": "Appointment.created",
+        "max": "0"
+      }
+    ]
+  }
+}

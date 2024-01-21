@@ -1,0 +1,41 @@
+@baseUrl=https://localhost:5001
+@applicationId=test-app
+@patientId = 00B737467037462CA5F337825EC5351C
+
+# https://www.hl7.org/fhir/patient.html
+# https://build.fhir.org/profiling.html
+
+### Get Patient Request:
+GET {{baseUrl}}/Patient/{{patientId}}
+X-Ihis-SourceApplication: {{applicationId}}
+
+### Create Patient Request, fixed identifier system
+### the identifier system is defined as fixed value at structure definition
+POST {{baseUrl}}/Patient
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Patient",
+  "identifier": [
+    {
+      "system": "http://synapxe.sg/identifier/fin",
+      "value": "S6660001A"
+    },
+  ]
+}
+
+### Create Patient Request - success
+POST {{baseUrl}}/Patient
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Patient",
+  "identifier": [
+    {
+      "system": "http://synapxe.sg/identifier/nric",
+      "value": "S6660001A"
+    }
+  ]
+}

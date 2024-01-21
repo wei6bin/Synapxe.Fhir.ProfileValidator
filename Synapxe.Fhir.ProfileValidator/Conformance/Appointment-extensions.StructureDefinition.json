@@ -1,0 +1,102 @@
+{
+  "resourceType": "Bundle",
+  "type": "collection",
+  "entry": [
+    {
+      "resource": {
+        "resourceType": "StructureDefinition",
+        "url": "http://synapxe.sg/extension/condition-tag",
+        "name": "condition-tag",
+        "status": "active",
+        "fhirVersion": "5.0.0",
+        "kind": "complex-type",
+        "abstract": false,
+        "context": [
+          {
+            "type": "element",
+            "expression": "Appointment"
+          }
+        ],
+        "type": "Extension",
+        "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+        "derivation": "constraint",
+        "differential": {
+          "element": [
+            {
+              "id": "Extension",
+              "path": "Extension",
+              "max": "2"
+            },
+            {
+              "id": "Extension.url",
+              "path": "Extension.url",
+              "fixedUri": "http://synapxe.sg/extension/condition-tag"
+            },
+            {
+              "id": "Extension.value[x]",
+              "path": "Extension.value[x]",
+              "type": [
+                {
+                  "code": "CodeableConcept"
+                }
+              ],
+              "binding": {
+                "strength": "required",
+                "valueSet": "http://synapxe.sg/ValueSet/hsg-condition-tag"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "resource": {
+        "resourceType": "StructureDefinition",
+        "url": "http://synapxe.sg/extension/mobile-number",
+        "name": "mobile-number",
+        "status": "active",
+        "fhirVersion": "5.0.0",
+        "kind": "complex-type",
+        "abstract": false,
+        "context": [
+          {
+            "type": "element",
+            "expression": "Appointment"
+          }
+        ],
+        "type": "Extension",
+        "baseDefinition": "http://hl7.org/fhir/StructureDefinition/Extension",
+        "derivation": "constraint",
+        "differential": {
+          "element": [
+            {
+              "id": "Extension",
+              "path": "Extension",
+              "max": "1"
+            },
+            {
+              "id": "Extension.url",
+              "path": "Extension.url",
+              "fixedUri": "http://synapxe.sg/extension/mobile-number"
+            },
+            {
+              "id": "Extension.value[x]",
+              "path": "Extension.value[x]",
+              "type": [
+                {
+                  "code": "string"
+                }
+              ],
+              "constraint": {
+                "key": "demo-apt-2",
+                "severity": "error",
+                "human": "Mobile format",
+                "expression": "$this.length() = 8 and ($this.substring(0,1) = '8' or $this.substring(0,1) = '9') and $this.matches('^[0-9]+$')"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

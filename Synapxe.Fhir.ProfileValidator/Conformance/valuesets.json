@@ -1,0 +1,93 @@
+{
+  "resourceType": "Bundle",
+  "id": "valueSets",
+  "meta": {
+    "lastUpdated": "2021-05-05T08:04:45.3420489+00:00"
+  },
+  "type": "collection",
+  "entry": [
+    {
+      "fullUrl": "http://synapxe.sg/fhir/ValueSet/appointmentCancellationReason",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "appointmentCancellationReason",
+        "url": "http://synapxe.sg/fhir/ValueSet/appointmentCancellationReason",
+        "version": "0.1.0",
+        "name": "Appointment Cancellation Reasons",
+        "title": "Care Programs",
+        "status": "active",
+        "date": "2023-08-01",
+        "publisher": "Synapxe Pte. Ltd.",
+        "description": "Appointment cancellation reasons",
+        "jurisdiction": [
+          {
+            "coding": [
+              {
+                "system": "urn:iso:std:iso:3166",
+                "code": "SG",
+                "display": "Singapore"
+              }
+            ]
+          }
+        ],
+        "compose": {
+          "include": [
+            {
+              "system": "http://synapxe.sg/fhir/ValueSet/appointmentCancellationReason",
+              "concept": [
+                {
+                  "code": "lost-interest",
+                  "display": "Lost interest"
+                },
+                {
+                  "code": "unavailable",
+                  "display": "Unavailable"
+                },
+                {
+                  "code": "reschedule",
+                  "display": "Reschedule"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+      "resource": {
+        "resourceType": "ValueSet",
+        "id": "hsg-condition-tag",
+        "url": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+        "version": "0.1.0",
+        "name": "hsg-condition-tag",
+        "title": "hsg-condition-tag",
+        "status": "active",
+        "date": "2021-12-01",
+        "publisher": "Integrated Health Information Systems Pte Ltd (IHiS)",
+        "description": "Patient Condition Tag",
+        "compose": {
+          "include": [
+            {
+              "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+              "concept": [
+                {
+                  "code": "DM",
+                  "display": "Diabetes Mellitus"
+                },
+                {
+                  "code": "HP",
+                  "display": "Hyperlipidemia (Lipid Disorders)"
+                },
+                {
+                  "code": "HT",
+                  "display": "Hypertension"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

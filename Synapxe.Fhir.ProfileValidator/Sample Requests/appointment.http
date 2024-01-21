@@ -1,0 +1,450 @@
+@baseUrl=https://localhost:5001
+@applicationId=test-app
+@patientId = B9D83005D9AE4BE2A3B678D5E1CDB57B
+
+# https://www.hl7.org/fhir/appointment.html
+# https://build.fhir.org/profiling.html
+
+### FHIR provides the native validation mechanisms to ensure the resource to conform to the defined specifications. 
+### Several aspects below on the native validation in FHIR
+
+### 1.1 Resource Structure Validation - FHIR native validation
+# FHIR resources have a defined structure, specifying the allowed elements, data types, and relationships.
+# e.g. unrecognized element 'date'
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "booked",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "date": "2024-01-01",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{@patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 1.2 Resource Structure Validation - FHIR native validation
+# e.g. expected element 'participant' as array instead of a value
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "booked",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": {
+    "actor": {
+      "reference": "Patient/{{@patientId}}"
+    },
+    "status": "tentative"
+  }
+}
+
+### 2.1 Cardinality Validation - FHIR native validation
+# FHIR specifies minimum and maximum cardinality for each element within a resource.
+# e.g. the mandatory field 'status' missing
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 2.2 Cardinality Validation - Custom validation
+# use StructureDefinition to define a profile that constrains or extends the base definition of a resource
+# by specifying a constraint at StructureDefinition to make optional field 'description' to mandatory ("min": 1)
+# e.g. the custom mandatory field 'description' missing
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 2.3 Cardinality Validation - Custom validation
+# e.g. to exclude a FHIR element 'created' from request payload, system to set the creation datetime when Appointment initially created
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "booked",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "created": "2024-01-01T12:30:00+08:00",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+
+### 3.1 Data Type Validation - FHIR native data type validation
+# FHIR defines specific data types for each element (e.g., string, code, datetime).
+# e.g. priority is code type, instead of string type
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "priority": "high",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+
+### 3.2 Data Type Validation - FHIR native data range validation
+# FHIR defines specific data types for each element (e.g., string, code, datetime).
+# e.g. minutesDuration is positiveInt type, FHIR to identify the value when it's negative
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "minutesDuration": -1,
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 3.3 Data Type Validation - Custom validation data range
+# e.g. validate the field 'minutesDuration' is less than 300 using FHIRPath, by set the FHIRPath expression
+# minutesDuration < 300
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "minutesDuration": 301,
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+
+### 4.1 Code System Validation - FHIR pre-defined code
+# For the a code used in an element, native validation checks that the code is a valid member of that code system.
+# e.g. system identified an error when the field 'status' value is 'completed', which does not follow the pre-defined code by FHIR
+# allowed value: proposed | pending | booked | arrived | fulfilled | cancelled | noshow | entered-in-error | checked-in | waitlist
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "completed",
+  "start": "2024-02-01T12:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 4.2 Code System Validation - User defined ValueSet
+# FHIR allows specifying value sets to restrict the possible values for certain elements. Native validation ensures that values comply with the defined value sets.
+# e.g. cancellationReason valueset binding iniformation at structure definition, 'not-available' is not a valid valueset
+
+PUT {{baseUrl}}/Appointment/{{apptId}}
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "id": "{{apptId}}",
+  "status": "cancelled",
+  "cancellationReason": {
+    "coding": [
+      {
+        "code": "not-available",
+        "display": "Not Available"
+      }
+    ]
+  },
+  "start": "2120-01-01T12:00:00+08:00",
+  "end": "2120-01-01T12:30:00+08:00",
+  "description": "For followup",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 5.1 Reference Validation - FHIR native validation on the reference type
+# For elements that represent references to other resources, native validation checks that the reference is valid
+# e.g. participant's actor points to patient resource and the patient resource with the id should exist.
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T13:00:00+08:00",
+  "end": "2024-02-01T13:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Practitioner/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 5. Reference Validation:
+# For elements that represent references to other resources, native validation checks that the reference is valid, points to an existing resource, and is of the correct type.
+# e.g. participant's actor points to patient resource and the patient resource with the id should exist.
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-02-01T13:00:00+08:00",
+  "end": "2024-02-01T13:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/dummy_patient_id"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 6. FHIR resource native rule validation: 
+# the native fhir rule, "+ Rule: The start must be less than or equal to the end"
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "booked",
+  "start": "2024-02-01T13:00:00+08:00",
+  "end": "2024-02-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 7. FHIRPath Expression Evaluation (Custom Validation)
+# FHIR uses FHIRPath expressions for complex validation scenarios. Native validation includes the evaluation of FHIRPath expressions defined in profiles or base FHIR resources.
+# e.g. start and end is past date, custom validation rule to identify the error.
+# when start or end presents, it SHALL have a higher value than current date time
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "status": "proposed",
+  "start": "2024-01-01T12:00:00+08:00",
+  "end": "2024-01-01T12:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+# Extension - used for adding addtional elements or information to resources
+# http://hl7.org/fhir/extensibility.html
+
+### 8. Extensions Validation - 
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "extension": [
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCode": "HT"
+    }
+  ],
+  "status": "booked",
+  "start": "2024-02-01T15:00:00+08:00",
+  "end": "2024-02-01T15:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### 8. Extensions Validation - Slicing
+# 
+
+# http://hl7.org/fhirpath/#expressions
+
+### Create Appointment Request - success
+
+POST {{baseUrl}}/Appointment
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Appointment",
+  "extension": [
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HT"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/condition-tag",
+      "valueCodeableConcept": {
+        "coding": [
+          {
+            "system": "http://synapxe.sg/ValueSet/hsg-condition-tag",
+            "code": "HP"
+          }
+        ]
+      }
+    },
+    {
+      "url": "http://synapxe.sg/extension/mobile-number",
+      "valueString": "88765432"
+    }
+  ],
+  "status": "proposed",
+  "start": "2024-02-02T01:00:00+08:00",
+  "end": "2024-02-02T01:30:00+08:00",
+  "description": "Dental Appointment",
+  "participant": [
+    {
+      "actor": {
+        "reference": "Patient/{{patientId}}"
+      },
+      "status": "tentative"
+    }
+  ]
+}
+
+### Get Appointment Request:
+@apptId = AF4EB4A90727442E800FC6F020C94FED
+# @name getAppointmentRequest
+GET {{baseUrl}}/Appointment/{{apptId}}
+X-Ihis-SourceApplication: {{applicationId}}
