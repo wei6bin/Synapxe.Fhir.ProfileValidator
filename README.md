@@ -119,3 +119,5 @@ _hint: refer to the sample [file](https://github.com/wei6bin/Synapxe.Fhir.Profil
 5. Modify the appsettings.json, to allow accept 'Patint' resource type at FhirDataStore (line 29)
 
 6. Create http request, refer to [patient.http](https://github.com/wei6bin/Synapxe.Fhir.ProfileValidator/blob/main/Synapxe.Fhir.ProfileValidator/Sample%20Requests/patient.http) from sample project
+
+7. Refer to https://github.com/bruce4000www/Synapxe.FhirNexus.ExtendedOperation/blob/master/README.md (from step 4 onwards) for how to add extended operation of $get-patient-by-nric
