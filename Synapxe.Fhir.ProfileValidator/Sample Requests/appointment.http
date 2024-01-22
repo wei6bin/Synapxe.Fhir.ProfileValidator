@@ -179,7 +179,7 @@ Content-Type: application/fhir+json
 
 ### 3.3 Data Type Validation - Custom validation data range
 # e.g. validate the field 'minutesDuration' is less than 300 using FHIRPath, by set the FHIRPath expression
-# minutesDuration < 300
+# minutesDuration <= 300
 
 POST {{baseUrl}}/Appointment
 X-Ihis-SourceApplication: {{applicationId}}

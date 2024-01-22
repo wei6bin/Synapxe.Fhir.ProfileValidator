@@ -25,7 +25,7 @@ Content-Type: application/fhir+json
   ]
 }
 
-### Create Patient Request - success
+### HANDS ON - birthDate SHALL not be future day when creating new record
 POST {{baseUrl}}/Patient
 X-Ihis-SourceApplication: {{applicationId}}
 Content-Type: application/fhir+json
@@ -37,5 +37,22 @@ Content-Type: application/fhir+json
       "system": "http://synapxe.sg/identifier/nric",
       "value": "S6660001A"
     }
-  ]
+  ],
+  "birthDate": "2030-01-01"
+}
+
+### HANDS ON - birthDate SHALL not be older than 150 years
+POST {{baseUrl}}/Patient
+X-Ihis-SourceApplication: {{applicationId}}
+Content-Type: application/fhir+json
+
+{
+  "resourceType": "Patient",
+  "identifier": [
+    {
+      "system": "http://synapxe.sg/identifier/nric",
+      "value": "S6660001A"
+    }
+  ],
+  "birthDate": "1874-01-01"
 }

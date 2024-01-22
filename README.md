@@ -1,17 +1,23 @@
 # FHIR Validation
 
 ## Start
-Validating FHIR Resource is an important aspect of working with FHIR.
-Here I will demonstrate the **native FHIR validation** and the profile validation by customize the **Structure Definition**. Below showcase based on the Appoinment resource.
+FHIR validation is the process of checking whether a FHIR resource conforms to the rules and constraints defined in the FHIR specification, and the associated profiles. 
+
+The validation ensures the data quality, consistent, accurate and complete. Here I will demonstrate the **native FHIR validation** and the profile validation by customize the **Structure Definition**. 
+
+The showcase is based on the Appoinment resource.
 
 ## Resource Structure Validation
 FHIR resources have a defined structure, specifying the allowed elements, data types, and relationships, it provides the native validation mechanisms to ensure the resource to conform to the defined specifications.
 
-e.g. it does not accept the un-defined element from payload.
+e.g. it does not accept the un-defined element from payload. - as 'date' is not a defined element.
+
 e.g. the element 'participant' is defined as array but pass in as single value
 
 ## Cardinality Validation
-FHIR specifies minimum and maximum cardinality for each element within a resource. System will throw error when the mandatory field 'status' is missing.
+FHIR specifies minimum and maximum cardinality for each element within a resource. 
+
+For the System will throw error when the mandatory field 'status' is missing.
 
 We can use StructureDefinition to define a profile that constrains or extends the base definition of a resource.
 The optional data field, the cardinality is 0..1 or 0..*, we can change it to mandatory by modify the minimal to 1 ("min": 1), so that the system expects it as mandatory field.
@@ -69,4 +75,47 @@ For the 2nd extension mobile-number, the cardinality is 0..1, and furthermore we
 
 [FHIR Profile](https://build.fhir.org/profiling.html)
 
-[FHIR Path](https://hl7.org/fhir/fhirpath.html)
+[FHIRPath](https://hl7.org/fhirpath/)
+
+[FHIRPath Demo Page](https://hl7.github.io/fhirpath.js/)
+
+# Hands On (Windows WSL Ubuntu)
+0. Make sure https://nexus.ihis-hip.sg/repository/ihis-nuget/ in the nuget package list.
+```
+dotnet nuget list source
+
+Registered Sources:
+  1.  nuget.org [Enabled]
+      https://api.nuget.org/v3/index.json
+  2.  nexus [Enabled]
+      https://nexus.ihis-hip.sg/repository/ihis-nuget/
+```
+1. Make sure FhirEngine templated installed
+```
+dotnet new --list | grep Fhir
+
+FhirEngine Web Api                            fhirengine-webapi  [C#]
+```
+2. Create project based on FHIRNexus template, framework net6.0 and db store type is Document DB.
+
+```
+mkdir Synapxe.Fhir.Handson1
+cd Synapxe.Fhir.Handson1
+dotnet new sln
+dotnet new fhirengine-webapi --includetest=false --framework=net6.0 --dbstore=Document
+```
+3. Add 'Patient' resource at capability-statement.json
+
+_hint: refer to 'Appointment' section. Keep all interaction and leave searchParam and Operation as empty as following:_
+
+"searchParam": []
+
+"operation": []
+
+4. New StructureDefinition file **Patient-custom.StructureDefinition.json** under Conformance folder
+
+_hint: refer to the sample [file](https://github.com/wei6bin/Synapxe.Fhir.ProfileValidator/blob/main/Synapxe.Fhir.ProfileValidator/Conformance/Patient-custom.StructureDefinition.json)_
+
+5. Modify the appsettings.json, to allow accept 'Patint' resource type at FhirDataStore (line 29)
+
+6. Create http request, refer to [patient.http](https://github.com/wei6bin/Synapxe.Fhir.ProfileValidator/blob/main/Synapxe.Fhir.ProfileValidator/Sample%20Requests/patient.http) from sample project
